@@ -3,7 +3,7 @@ module.exports = {
   output: {
       libraryTarget: 'var',
       library: 'PatientList',
-      path:     'builds',
+      path:     '/Users/ethan/Projects/reactEmbed/builds',
       filename: 'patientList.js',
   },
   module: {

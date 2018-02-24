@@ -43,8 +43,11 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
       data: '',
       width: 0,
       height: 0,
+      lastCall: 0,
+      dataPage: '',
     };
     this.getData = this.getData.bind(this);
+    this.pagination = this.pagination.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
@@ -89,11 +92,24 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
             Status: parseInt(spreadsheet[i.toString()][4]), // To determine colour of row
           });
         }
-        this.setState({ data: data });
+        this.setState({ data: data, dataPage: data.slice(0, 51) });
       })
       .catch((err) => {
         console.error(err); // eslint-disable-line
       });
+  }
+
+  pagination(index, direction) {
+    const { data } = this.state;
+    if (direction === 'left') {
+      if (index <= 51) {
+        this.setState({ dataPage: data.slice(0, 51)});
+      } else {
+        this.setState({ dataPage: data.slice(index, index - 50), lastCall: index - 50 });
+      }
+    } else {
+      // plus 50
+    }
   }
 
   render() {
@@ -132,7 +148,11 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
       text: 'Date of Death',
     }]
     return (
-      <BootstrapTable keyField='Name' data={ this.state.data } columns={ COLS } rowStyle={ rowStyle } bordered striped hover condensed />
+      <div>
+        <button onClick={pagination(this.state.lastCall, left)}>Left</button>
+        <BootstrapTable keyField='Name' data={ this.state.currentData } columns={ COLS } rowStyle={ rowStyle } bordered striped hover condensed />
+      <button onClick={pagination(this.state.lastCall, right)}>Right</button>
+      </div>
     );
   }
 }
@@ -141,7 +161,6 @@ DataGrid.propTypes = {
   globalStyle: PropTypes.string,
   lgMax: PropTypes.string,
   xsMax: PropTypes.string,
-  tag: PropTypes.string.isRequired,
 };
 
 export default DataGrid;

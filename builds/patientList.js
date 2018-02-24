@@ -261,8 +261,7 @@ var PatientList =
 	DataGrid.propTypes = {
 	  globalStyle: _propTypes2.default.string,
 	  lgMax: _propTypes2.default.string,
-	  xsMax: _propTypes2.default.string,
-	  tag: _propTypes2.default.string.isRequired
+	  xsMax: _propTypes2.default.string
 	};
 
 	exports.default = DataGrid;
