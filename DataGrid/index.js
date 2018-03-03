@@ -6,7 +6,6 @@
 
 import React from 'react';
 import axios from 'axios';
-import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 
@@ -243,6 +242,7 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
     return (
       <div style={{ width: 'inherit', maxWidth: 'inherit', display: 'block' }}>
         <div style={{ margin: '0 auto', maxWidth: 450, textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
+          <h3>Total Current Patients: {this.state.currentPatients}</h3>
           <h4><u>Breakdown by species</u></h4>
           {speciesToRender}
         </div>
@@ -273,9 +273,6 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
 }
 
 DataGrid.propTypes = {
-  globalStyle: PropTypes.string,
-  lgMax: PropTypes.string,
-  xsMax: PropTypes.string,
 };
 
 export default DataGrid;

@@ -62,11 +62,7 @@ var PatientList =
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var PatientList = function PatientList(element) {
-	  var globalStyle = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-	  var lgMax = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-	  var xsMax = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
-
-	  _reactDom2.default.render(_react2.default.createElement(_DataGrid2.default, { globalStyle: globalStyle, lgMax: lgMax, xsMax: xsMax }), element);
+	  _reactDom2.default.render(_react2.default.createElement(_DataGrid2.default, null), element);
 	};
 
 	module.exports = PatientList;
@@ -91,11 +87,7 @@ var PatientList =
 
 	var _axios2 = _interopRequireDefault(_axios);
 
-	var _propTypes = __webpack_require__(64);
-
-	var _propTypes2 = _interopRequireDefault(_propTypes);
-
-	var _reactBootstrapTableNext = __webpack_require__(66);
+	var _reactBootstrapTableNext = __webpack_require__(64);
 
 	var _reactBootstrapTableNext2 = _interopRequireDefault(_reactBootstrapTableNext);
 
@@ -434,6 +426,12 @@ var PatientList =
 	          'div',
 	          { style: { margin: '0 auto', maxWidth: 450, textAlign: 'center', display: 'flex', flexDirection: 'column' } },
 	          _react2.default.createElement(
+	            'h3',
+	            null,
+	            'Total Current Patients: ',
+	            this.state.currentPatients
+	          ),
+	          _react2.default.createElement(
 	            'h4',
 	            null,
 	            _react2.default.createElement(
@@ -495,11 +493,7 @@ var PatientList =
 	  return DataGrid;
 	}(_react2.default.Component);
 
-	DataGrid.propTypes = {
-	  globalStyle: _propTypes2.default.string,
-	  lgMax: _propTypes2.default.string,
-	  xsMax: _propTypes2.default.string
-	};
+	DataGrid.propTypes = {};
 
 	exports.default = DataGrid;
 
@@ -6406,104 +6400,13 @@ var PatientList =
 /* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
-
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-	/**
-	 * Copyright (c) 2013-present, Facebook, Inc.
-	 *
-	 * This source code is licensed under the MIT license found in the
-	 * LICENSE file in the root directory of this source tree.
-	 */
-
-	if (process.env.NODE_ENV !== 'production') {
-	  var REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol.for && Symbol.for('react.element') || 0xeac7;
-
-	  var isValidElement = function isValidElement(object) {
-	    return (typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
-	  };
-
-	  // By explicitly using `prop-types` you are opting into new development behavior.
-	  // http://fb.me/prop-types-in-prod
-	  var throwOnDirectAccess = true;
-	  module.exports = __webpack_require__(31)(isValidElement, throwOnDirectAccess);
-	} else {
-	  // By explicitly using `prop-types` you are opting into new production behavior.
-	  // http://fb.me/prop-types-in-prod
-	  module.exports = __webpack_require__(65)();
-	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
-
-/***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright (c) 2013-present, Facebook, Inc.
-	 *
-	 * This source code is licensed under the MIT license found in the
-	 * LICENSE file in the root directory of this source tree.
-	 */
-
-	'use strict';
-
-	var emptyFunction = __webpack_require__(10);
-	var invariant = __webpack_require__(13);
-	var ReactPropTypesSecret = __webpack_require__(32);
-
-	module.exports = function () {
-	  function shim(props, propName, componentName, location, propFullName, secret) {
-	    if (secret === ReactPropTypesSecret) {
-	      // It is still safe when called from React.
-	      return;
-	    }
-	    invariant(false, 'Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use PropTypes.checkPropTypes() to call them. ' + 'Read more at http://fb.me/use-check-prop-types');
-	  };
-	  shim.isRequired = shim;
-	  function getShim() {
-	    return shim;
-	  };
-	  // Important!
-	  // Keep this list in sync with production version in `./factoryWithTypeCheckers.js`.
-	  var ReactPropTypes = {
-	    array: shim,
-	    bool: shim,
-	    func: shim,
-	    number: shim,
-	    object: shim,
-	    string: shim,
-	    symbol: shim,
-
-	    any: shim,
-	    arrayOf: getShim,
-	    element: shim,
-	    instanceOf: getShim,
-	    node: shim,
-	    objectOf: getShim,
-	    oneOf: getShim,
-	    oneOfType: getShim,
-	    shape: getShim,
-	    exact: getShim
-	  };
-
-	  ReactPropTypes.checkPropTypes = emptyFunction;
-	  ReactPropTypes.PropTypes = ReactPropTypes;
-
-	  return ReactPropTypes;
-	};
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports, __webpack_require__) {
-
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 
-	var _bootstrapTable = __webpack_require__(67);
+	var _bootstrapTable = __webpack_require__(65);
 
 	var _bootstrapTable2 = _interopRequireDefault(_bootstrapTable);
 
@@ -6518,7 +6421,7 @@ var PatientList =
 	exports.default = (0, _container2.default)(_bootstrapTable2.default);
 
 /***/ }),
-/* 67 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6543,7 +6446,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -6749,6 +6652,97 @@ var PatientList =
 	exports.default = BootstrapTable;
 
 /***/ }),
+/* 66 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {'use strict';
+
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+	/**
+	 * Copyright (c) 2013-present, Facebook, Inc.
+	 *
+	 * This source code is licensed under the MIT license found in the
+	 * LICENSE file in the root directory of this source tree.
+	 */
+
+	if (process.env.NODE_ENV !== 'production') {
+	  var REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol.for && Symbol.for('react.element') || 0xeac7;
+
+	  var isValidElement = function isValidElement(object) {
+	    return (typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object' && object !== null && object.$$typeof === REACT_ELEMENT_TYPE;
+	  };
+
+	  // By explicitly using `prop-types` you are opting into new development behavior.
+	  // http://fb.me/prop-types-in-prod
+	  var throwOnDirectAccess = true;
+	  module.exports = __webpack_require__(31)(isValidElement, throwOnDirectAccess);
+	} else {
+	  // By explicitly using `prop-types` you are opting into new production behavior.
+	  // http://fb.me/prop-types-in-prod
+	  module.exports = __webpack_require__(67)();
+	}
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright (c) 2013-present, Facebook, Inc.
+	 *
+	 * This source code is licensed under the MIT license found in the
+	 * LICENSE file in the root directory of this source tree.
+	 */
+
+	'use strict';
+
+	var emptyFunction = __webpack_require__(10);
+	var invariant = __webpack_require__(13);
+	var ReactPropTypesSecret = __webpack_require__(32);
+
+	module.exports = function () {
+	  function shim(props, propName, componentName, location, propFullName, secret) {
+	    if (secret === ReactPropTypesSecret) {
+	      // It is still safe when called from React.
+	      return;
+	    }
+	    invariant(false, 'Calling PropTypes validators directly is not supported by the `prop-types` package. ' + 'Use PropTypes.checkPropTypes() to call them. ' + 'Read more at http://fb.me/use-check-prop-types');
+	  };
+	  shim.isRequired = shim;
+	  function getShim() {
+	    return shim;
+	  };
+	  // Important!
+	  // Keep this list in sync with production version in `./factoryWithTypeCheckers.js`.
+	  var ReactPropTypes = {
+	    array: shim,
+	    bool: shim,
+	    func: shim,
+	    number: shim,
+	    object: shim,
+	    string: shim,
+	    symbol: shim,
+
+	    any: shim,
+	    arrayOf: getShim,
+	    element: shim,
+	    instanceOf: getShim,
+	    node: shim,
+	    objectOf: getShim,
+	    oneOf: getShim,
+	    oneOfType: getShim,
+	    shape: getShim,
+	    exact: getShim
+	  };
+
+	  ReactPropTypes.checkPropTypes = emptyFunction;
+	  ReactPropTypes.PropTypes = ReactPropTypes;
+
+	  return ReactPropTypes;
+	};
+
+/***/ }),
 /* 68 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6827,7 +6821,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -6932,7 +6926,7 @@ var PatientList =
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -7118,7 +7112,7 @@ var PatientList =
 
 	var _classnames2 = _interopRequireDefault(_classnames);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -7313,7 +7307,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -7442,7 +7436,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -7487,7 +7481,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -7630,7 +7624,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -7885,7 +7879,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -8053,7 +8047,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -8168,7 +8162,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -8989,7 +8983,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
@@ -9290,7 +9284,7 @@ var PatientList =
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _propTypes = __webpack_require__(64);
+	var _propTypes = __webpack_require__(66);
 
 	var _propTypes2 = _interopRequireDefault(_propTypes);
 
