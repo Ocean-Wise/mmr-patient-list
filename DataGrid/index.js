@@ -43,21 +43,26 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
       data: '',
       width: 0,
       height: 0,
-      lastCall: 0,
-      dataPage: '',
+      pageIndex: 0,
+      pages: [],
+      chunkSize: 50,
+      currentPatients: 0,
+      currentSpecies: [],
     };
     this.getData = this.getData.bind(this);
     this.pagination = this.pagination.bind(this);
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
+    this.chunkData = this.chunkData.bind(this);
+    this.createWikiLink = this.createWikiLink.bind(this);
+    this.getSpeciesList = this.getSpeciesList.bind(this);
   }
 
   componentWillMount() {
-    this.updateWindowDimensions(),
+    this.updateWindowDimensions();
     this.getData();
   }
 
   componentDidMount() {
-    this.interval = setInterval(this.getData(), 1000);
     window.addEventListener('resize', this.updateWindowDimensions);
   }
 
@@ -74,7 +79,6 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
     const URL = "https://sheets.googleapis.com/v4/spreadsheets/1coq6ZOy8fZYAZ6DKjPaQepaSvnhqu2B3eTSJ1Tp5FJA/values/Sheet1!A2:X1011?key=AIzaSyCy5jc38aVVg5GIseF611VkbGUKB3DNhXo";
     axios.get(URL)
       .then((res) => {
-        console.log(res);
         let len = res.data.values.length;
         let spreadsheet = res.data.values;
         let data = [];
@@ -92,66 +96,177 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
             Status: parseInt(spreadsheet[i.toString()][4]), // To determine colour of row
           });
         }
-        this.setState({ data: data, dataPage: data.slice(0, 51) });
+        let patientPages = data;
+        const [list, chunkSize] = [patientPages, this.state.chunkSize]; // Initialize chunking data
+
+        /*
+        * Create a new array of arrays with up to 9 or 6 values each from the 'list' array of patients
+        * Outputs like [ [9], [9], [2] ]
+        *
+        */
+        const pages = new Array(Math.ceil(list.length / chunkSize)).fill().map(() => list.splice(0, chunkSize));
+        this.setState({ pages: pages, data: [].concat.apply([], pages) });
+        this.getSpeciesList();
       })
       .catch((err) => {
         console.error(err); // eslint-disable-line
       });
   }
 
-  pagination(index, direction) {
+  pagination(i) {
+    const { data, pageIndex } = this.state;
+
+    this.setState({ pageIndex: i });
+  }
+
+  chunkData(event) {
+    const { pages } = this.state;
+    var merged = [].concat.apply([], pages);
+    const [list, chunkSize] = [merged, event.target.value]; // Initialize chunking data
+
+    /*
+    * Create a new array of arrays with up to 9 or 6 values each from the 'list' array of patients
+    * Outputs like [ [9], [9], [2] ]
+    *
+    */
+    const newPages = new Array(Math.ceil(list.length / chunkSize)).fill().map(() => list.splice(0, chunkSize));
+    this.setState({ data: [].concat.apply([], newPages), pages: newPages, chunkSize: event.target.value, pageIndex: 0 });
+  }
+
+  createWikiLink(species) {
+    if (species.toLowerCase() === "phoca vitulina richardsii")
+      species = "phoca vitulina richardsi";
+    species = species.replace(/\s+/g, '_').toLowerCase();
+    return "https://en.wikipedia.org/wiki/" + species;
+  }
+
+  getSpeciesList() {
     const { data } = this.state;
-    if (direction === 'left') {
-      if (index <= 51) {
-        this.setState({ dataPage: data.slice(0, 51)});
-      } else {
-        this.setState({ dataPage: data.slice(index, index - 50), lastCall: index - 50 });
+    var currentAnimals = {};
+    var count = 0;
+    var patients = data.map((patient) => {
+      if (parseInt(patient.Status) === 0) {
+        count++;
+        if (currentAnimals[patient.Species] >= 1) {
+          currentAnimals[patient.Species] = currentAnimals[patient.Species] + 1;
+        } else {
+          currentAnimals[patient.Species] = 1;
+        }
       }
-    } else {
-      // plus 50
-    }
+    });
+
+    this.setState({ currentPatients: count, currentSpecies: currentAnimals });
   }
 
   render() {
+    const { pages, pageIndex, currentSpecies } = this.state;
     // TODO: Implement multiple breakpoints for this
     const shouldHide = this.state.width > 768 ? false : true;
-    const COLS = [{
-      dataField: 'Name',
-      text: 'Name',
-    }, {
-      dataField: 'ID',
-      text: 'ID',
-      hidden: shouldHide,
-    }, {
-      dataField: 'Species',
-      text: 'Species',
-    }, {
-      dataField: 'Sex',
-      text: 'Sex',
-      hidden: shouldHide,
-    }, {
-      dataField: 'AdmitDate',
-      text: 'Admit Date',
-    }, {
-      dataField: 'CollectionSite',
-      text: 'Collection Site',
-      hidden: shouldHide,
-    }, {
-      dataField: 'ReasonForAdmit',
-      text: 'Reason for Admit',
-      hidden: shouldHide,
-    }, {
-      dataField: 'ReleaseDate',
-      text: 'Release Date',
-    }, {
-      dataField: 'DateOfDeath',
-      text: 'Date of Death',
-    }]
+    const COLS = [
+      {
+        dataField: 'Name',
+        text: 'Name',
+        sort: true
+      }, {
+        dataField: 'ID',
+        text: 'ID',
+        hidden: shouldHide,
+        sort: true
+      }, {
+        dataField: 'Species',
+        text: 'Species',
+        sort: true
+      }, {
+        dataField: 'Sex',
+        text: 'Sex',
+        hidden: shouldHide,
+        sort: true
+      }, {
+        dataField: 'AdmitDate',
+        text: 'Admit Date',
+        sort: true
+      }, {
+        dataField: 'CollectionSite',
+        text: 'Collection Site',
+        hidden: shouldHide,
+        sort: true
+      }, {
+        dataField: 'ReasonForAdmit',
+        text: 'Reason for Admit',
+        hidden: shouldHide,
+        sort: true
+      }, {
+        dataField: 'ReleaseDate',
+        text: 'Release Date',
+        sort: true
+      }, {
+        dataField: 'DateOfDeath',
+        text: 'Date of Death',
+        sort: true
+      }
+    ];
+
+    const buttons = pages.map((page, i) => {
+      if (this.state.width < 965) {
+        return null;
+      }
+      if (pageIndex === i) {
+        return <button style={{ padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: '#fff', textDecoration: 'none', backgroundColor: '#337ab7', border: '1px solid #ddd' }} key={`page-${i}`} onClick={() => this.pagination(i)}>{(i + 1).toString()}</button>;
+      }
+      return <button style={{ padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: '#337ab7', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }} key={`page-${i}`} onClick={() => this.pagination(i)}>{(i + 1).toString()}</button>;
+    })
+
+    if (pages.length === 0) {
+      return (
+        <div></div>
+      );
+    }
+
+    let prev;
+    if (pageIndex === 0) {
+      prev = <button style={{ padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: 'grey', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }} disabled>Previous</button>;
+    } else {
+      prev = <button style={{ padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: '#337ab7', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }} onClick={() => this.pagination(pageIndex - 1)}>Previous</button>
+    }
+    let next;
+    if (pageIndex === pages.length - 1 ) {
+      next = <button style={{ padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: 'grey', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }} disabled>Next</button>;
+    } else {
+      next = <button style={{ padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: '#337ab7', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }} onClick={() => this.pagination(pageIndex + 1)}>Next</button>;
+    }
+
+    let speciesToRender = [];
+    for (var species in currentSpecies) {
+      speciesToRender.push(<span><a href={this.createWikiLink(species)} target="_blank"><b>{species}</b></a>: {currentSpecies[species]}</span>);
+    }
+
     return (
-      <div>
-        <button onClick={pagination(this.state.lastCall, left)}>Left</button>
-        <BootstrapTable keyField='Name' data={ this.state.currentData } columns={ COLS } rowStyle={ rowStyle } bordered striped hover condensed />
-      <button onClick={pagination(this.state.lastCall, right)}>Right</button>
+      <div style={{ width: 'inherit', maxWidth: 'inherit', display: 'block' }}>
+        <div style={{ margin: '0 auto', maxWidth: 450, textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
+          <h4><u>Breakdown by species</u></h4>
+          {speciesToRender}
+        </div>
+        <br/>
+        <div style={{ display: 'inline-flex', flexDirection: 'row', marginRight: 15 }}>
+          Show&nbsp;
+          <select onChange={(event) => this.chunkData(event)} value={this.state.chunkSize}>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+          &nbsp;entries
+        </div><br/>
+        <div style={{ marginTop: 15, display: 'inline-flex', flexDirection: 'row' }}>
+          {prev}
+          {buttons}
+          {next}
+          <span style={this.state.width < 965 ? { display: 'block', marginTop: 5, marginLeft: 15 } : { display: 'none' }}>{this.state.width < 965 ? `Page ${pageIndex + 1} of ${pages.length}` : ''}</span>
+        </div>
+        <BootstrapTable keyField='Name' data={ pages[pageIndex] } columns={ COLS } rowStyle={ rowStyle } bordered striped hover condensed />
+        <div style={{ display: 'inline-flex', flexDirection: 'row' }}>
+          {prev}
+          {buttons}
+          {next}
+        </div>
       </div>
     );
   }

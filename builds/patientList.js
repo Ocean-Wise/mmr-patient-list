@@ -153,22 +153,31 @@ var PatientList =
 	    _this.state = {
 	      data: '',
 	      width: 0,
-	      height: 0
+	      height: 0,
+	      pageIndex: 0,
+	      pages: [],
+	      chunkSize: 50,
+	      currentPatients: 0,
+	      currentSpecies: []
 	    };
 	    _this.getData = _this.getData.bind(_this);
+	    _this.pagination = _this.pagination.bind(_this);
 	    _this.updateWindowDimensions = _this.updateWindowDimensions.bind(_this);
+	    _this.chunkData = _this.chunkData.bind(_this);
+	    _this.createWikiLink = _this.createWikiLink.bind(_this);
+	    _this.getSpeciesList = _this.getSpeciesList.bind(_this);
 	    return _this;
 	  }
 
 	  _createClass(DataGrid, [{
 	    key: 'componentWillMount',
 	    value: function componentWillMount() {
-	      this.updateWindowDimensions(), this.getData();
+	      this.updateWindowDimensions();
+	      this.getData();
 	    }
 	  }, {
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
-	      this.interval = setInterval(this.getData(), 1000);
 	      window.addEventListener('resize', this.updateWindowDimensions);
 	    }
 	  }, {
@@ -191,7 +200,6 @@ var PatientList =
 
 	      var URL = "https://sheets.googleapis.com/v4/spreadsheets/1coq6ZOy8fZYAZ6DKjPaQepaSvnhqu2B3eTSJ1Tp5FJA/values/Sheet1!A2:X1011?key=AIzaSyCy5jc38aVVg5GIseF611VkbGUKB3DNhXo";
 	      _axios2.default.get(URL).then(function (res) {
-	        console.log(res);
 	        var len = res.data.values.length;
 	        var spreadsheet = res.data.values;
 	        var data = [];
@@ -209,49 +217,278 @@ var PatientList =
 	            Status: parseInt(spreadsheet[i.toString()][4]) // To determine colour of row
 	          });
 	        }
-	        _this2.setState({ data: data });
+	        var patientPages = data;
+	        var _ref = [patientPages, _this2.state.chunkSize],
+	            list = _ref[0],
+	            chunkSize = _ref[1]; // Initialize chunking data
+
+	        /*
+	        * Create a new array of arrays with up to 9 or 6 values each from the 'list' array of patients
+	        * Outputs like [ [9], [9], [2] ]
+	        *
+	        */
+
+	        var pages = new Array(Math.ceil(list.length / chunkSize)).fill().map(function () {
+	          return list.splice(0, chunkSize);
+	        });
+	        _this2.setState({ pages: pages, data: [].concat.apply([], pages) });
+	        _this2.getSpeciesList();
 	      }).catch(function (err) {
 	        console.error(err); // eslint-disable-line
 	      });
 	    }
 	  }, {
+	    key: 'pagination',
+	    value: function pagination(i) {
+	      var _state = this.state,
+	          data = _state.data,
+	          pageIndex = _state.pageIndex;
+
+
+	      this.setState({ pageIndex: i });
+	    }
+	  }, {
+	    key: 'chunkData',
+	    value: function chunkData(event) {
+	      var pages = this.state.pages;
+
+	      var merged = [].concat.apply([], pages);
+	      var _ref2 = [merged, event.target.value],
+	          list = _ref2[0],
+	          chunkSize = _ref2[1]; // Initialize chunking data
+
+	      /*
+	      * Create a new array of arrays with up to 9 or 6 values each from the 'list' array of patients
+	      * Outputs like [ [9], [9], [2] ]
+	      *
+	      */
+
+	      var newPages = new Array(Math.ceil(list.length / chunkSize)).fill().map(function () {
+	        return list.splice(0, chunkSize);
+	      });
+	      this.setState({ data: [].concat.apply([], newPages), pages: newPages, chunkSize: event.target.value, pageIndex: 0 });
+	    }
+	  }, {
+	    key: 'createWikiLink',
+	    value: function createWikiLink(species) {
+	      if (species.toLowerCase() === "phoca vitulina richardsii") species = "phoca vitulina richardsi";
+	      species = species.replace(/\s+/g, '_').toLowerCase();
+	      return "https://en.wikipedia.org/wiki/" + species;
+	    }
+	  }, {
+	    key: 'getSpeciesList',
+	    value: function getSpeciesList() {
+	      var data = this.state.data;
+
+	      var currentAnimals = {};
+	      var count = 0;
+	      var patients = data.map(function (patient) {
+	        if (parseInt(patient.Status) === 0) {
+	          count++;
+	          if (currentAnimals[patient.Species] >= 1) {
+	            currentAnimals[patient.Species] = currentAnimals[patient.Species] + 1;
+	          } else {
+	            currentAnimals[patient.Species] = 1;
+	          }
+	        }
+	      });
+
+	      this.setState({ currentPatients: count, currentSpecies: currentAnimals });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
+	      var _this3 = this;
+
+	      var _state2 = this.state,
+	          pages = _state2.pages,
+	          pageIndex = _state2.pageIndex,
+	          currentSpecies = _state2.currentSpecies;
 	      // TODO: Implement multiple breakpoints for this
+
 	      var shouldHide = this.state.width > 768 ? false : true;
 	      var COLS = [{
 	        dataField: 'Name',
-	        text: 'Name'
+	        text: 'Name',
+	        sort: true
 	      }, {
 	        dataField: 'ID',
 	        text: 'ID',
-	        hidden: shouldHide
+	        hidden: shouldHide,
+	        sort: true
 	      }, {
 	        dataField: 'Species',
-	        text: 'Species'
+	        text: 'Species',
+	        sort: true
 	      }, {
 	        dataField: 'Sex',
 	        text: 'Sex',
-	        hidden: shouldHide
+	        hidden: shouldHide,
+	        sort: true
 	      }, {
 	        dataField: 'AdmitDate',
-	        text: 'Admit Date'
+	        text: 'Admit Date',
+	        sort: true
 	      }, {
 	        dataField: 'CollectionSite',
 	        text: 'Collection Site',
-	        hidden: shouldHide
+	        hidden: shouldHide,
+	        sort: true
 	      }, {
 	        dataField: 'ReasonForAdmit',
 	        text: 'Reason for Admit',
-	        hidden: shouldHide
+	        hidden: shouldHide,
+	        sort: true
 	      }, {
 	        dataField: 'ReleaseDate',
-	        text: 'Release Date'
+	        text: 'Release Date',
+	        sort: true
 	      }, {
 	        dataField: 'DateOfDeath',
-	        text: 'Date of Death'
+	        text: 'Date of Death',
+	        sort: true
 	      }];
-	      return _react2.default.createElement(_reactBootstrapTableNext2.default, { keyField: 'Name', data: this.state.data, columns: COLS, rowStyle: rowStyle, bordered: true, striped: true, hover: true, condensed: true });
+
+	      var buttons = pages.map(function (page, i) {
+	        if (_this3.state.width < 965) {
+	          return null;
+	        }
+	        if (pageIndex === i) {
+	          return _react2.default.createElement(
+	            'button',
+	            { style: { padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: '#fff', textDecoration: 'none', backgroundColor: '#337ab7', border: '1px solid #ddd' }, key: 'page-' + i, onClick: function onClick() {
+	                return _this3.pagination(i);
+	              } },
+	            (i + 1).toString()
+	          );
+	        }
+	        return _react2.default.createElement(
+	          'button',
+	          { style: { padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: '#337ab7', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }, key: 'page-' + i, onClick: function onClick() {
+	              return _this3.pagination(i);
+	            } },
+	          (i + 1).toString()
+	        );
+	      });
+
+	      if (pages.length === 0) {
+	        return _react2.default.createElement('div', null);
+	      }
+
+	      var prev = void 0;
+	      if (pageIndex === 0) {
+	        prev = _react2.default.createElement(
+	          'button',
+	          { style: { padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: 'grey', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }, disabled: true },
+	          'Previous'
+	        );
+	      } else {
+	        prev = _react2.default.createElement(
+	          'button',
+	          { style: { padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: '#337ab7', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }, onClick: function onClick() {
+	              return _this3.pagination(pageIndex - 1);
+	            } },
+	          'Previous'
+	        );
+	      }
+	      var next = void 0;
+	      if (pageIndex === pages.length - 1) {
+	        next = _react2.default.createElement(
+	          'button',
+	          { style: { padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: 'grey', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }, disabled: true },
+	          'Next'
+	        );
+	      } else {
+	        next = _react2.default.createElement(
+	          'button',
+	          { style: { padding: '6px 12px', marginLeft: '-1px', lineHeight: 1.42857143, color: '#337ab7', textDecoration: 'none', backgroundColor: '#fff', border: '1px solid #ddd' }, onClick: function onClick() {
+	              return _this3.pagination(pageIndex + 1);
+	            } },
+	          'Next'
+	        );
+	      }
+
+	      var speciesToRender = [];
+	      for (var species in currentSpecies) {
+	        speciesToRender.push(_react2.default.createElement(
+	          'span',
+	          null,
+	          _react2.default.createElement(
+	            'a',
+	            { href: this.createWikiLink(species), target: '_blank' },
+	            _react2.default.createElement(
+	              'b',
+	              null,
+	              species
+	            )
+	          ),
+	          ': ',
+	          currentSpecies[species]
+	        ));
+	      }
+
+	      return _react2.default.createElement(
+	        'div',
+	        { style: { width: 'inherit', maxWidth: 'inherit', display: 'block' } },
+	        _react2.default.createElement(
+	          'div',
+	          { style: { margin: '0 auto', maxWidth: 450, textAlign: 'center', display: 'flex', flexDirection: 'column' } },
+	          _react2.default.createElement(
+	            'h4',
+	            null,
+	            _react2.default.createElement(
+	              'u',
+	              null,
+	              'Breakdown by species'
+	            )
+	          ),
+	          speciesToRender
+	        ),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'div',
+	          { style: { display: 'inline-flex', flexDirection: 'row', marginRight: 15 } },
+	          'Show\xA0',
+	          _react2.default.createElement(
+	            'select',
+	            { onChange: function onChange(event) {
+	                return _this3.chunkData(event);
+	              }, value: this.state.chunkSize },
+	            _react2.default.createElement(
+	              'option',
+	              { value: 50 },
+	              '50'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: 100 },
+	              '100'
+	            )
+	          ),
+	          '\xA0entries'
+	        ),
+	        _react2.default.createElement('br', null),
+	        _react2.default.createElement(
+	          'div',
+	          { style: { marginTop: 15, display: 'inline-flex', flexDirection: 'row' } },
+	          prev,
+	          buttons,
+	          next,
+	          _react2.default.createElement(
+	            'span',
+	            { style: this.state.width < 965 ? { display: 'block', marginTop: 5, marginLeft: 15 } : { display: 'none' } },
+	            this.state.width < 965 ? 'Page ' + (pageIndex + 1) + ' of ' + pages.length : ''
+	          )
+	        ),
+	        _react2.default.createElement(_reactBootstrapTableNext2.default, { keyField: 'Name', data: pages[pageIndex], columns: COLS, rowStyle: rowStyle, bordered: true, striped: true, hover: true, condensed: true }),
+	        _react2.default.createElement(
+	          'div',
+	          { style: { display: 'inline-flex', flexDirection: 'row' } },
+	          prev,
+	          buttons,
+	          next
+	        )
+	      );
 	    }
 	  }]);
 
