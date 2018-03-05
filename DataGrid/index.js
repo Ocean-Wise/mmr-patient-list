@@ -13,6 +13,9 @@ import SEAL from './images/harbour-seal.jpg';
 import ELEPHANTSEAL from './images/northern-elephant-seal.jpg';
 import STELLER from './images/steller-sea-lion.jpg';
 import FURSEAL from './images/northern-fur-seal.jpg';
+import OTTER from './images/otter.jpg';
+import TURTLE from './images/turtle.jpg';
+import DOLPHIN from './images/dolphin.jpg';
 
 const rowStyle = (row, rowIndex) => {
   const style = {};
@@ -259,6 +262,12 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
         imgSrc = FURSEAL;
       } else if (species === 'Northern elephant seal') {
         imgSrc = ELEPHANTSEAL;
+      } else if (species === 'Sea otter') {
+        imgSrc = OTTER;
+      } else if (species === 'Cetacean') {
+        imgSrc = DOLPHIN;
+      } else {
+        imgSrc = TURTLE;
       }
       speciesToRender.push(<span style={{ margin: 6 }}><a href={this.createWikiLink(species)} target="_blank"><img style={{ borderRadius: 100 }} src={imgSrc} alt={species} width={150} height={150} /><br/><b>{species}</b></a>: {currentSpecies[species]}</span>);
     }
