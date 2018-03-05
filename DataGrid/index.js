@@ -8,6 +8,11 @@ import React from 'react';
 import axios from 'axios';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import SEALION from './images/california-sea-lion.jpg';
+import SEAL from './images/harbour-seal.jpg';
+import ELEPHANTSEAL from './images/northern-elephant-seal.jpg';
+import STELLER from './images/steller-sea-lion.jpg';
+import FURSEAL from './images/northern-fur-seal.jpg';
 
 const rowStyle = (row, rowIndex) => {
   const style = {};
@@ -95,6 +100,14 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
             Status: parseInt(spreadsheet[i.toString()][4]), // To determine colour of row
           });
         }
+
+        // Sort the data by Admit Date
+        data.sort((a, b) => {
+          a = new Date(a.AdmitDate);
+          b = new Date(b.AdmitDate);
+          return a > b ? -1 : a < b ? 1 : 0;
+        });
+
         let patientPages = data;
         const [list, chunkSize] = [patientPages, this.state.chunkSize]; // Initialize chunking data
 
@@ -163,13 +176,12 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
     const shouldHide = this.state.width > 768 ? false : true;
     const COLS = [
       {
+       dataField: 'ID',
+       text: 'ID',
+       sort: true
+     }, {
         dataField: 'Name',
         text: 'Name',
-        sort: true
-      }, {
-        dataField: 'ID',
-        text: 'ID',
-        hidden: shouldHide,
         sort: true
       }, {
         dataField: 'Species',
@@ -178,12 +190,10 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
       }, {
         dataField: 'Sex',
         text: 'Sex',
-        hidden: shouldHide,
         sort: true
       }, {
         dataField: 'AdmitDate',
         text: 'Admit Date',
-        sort: true
       }, {
         dataField: 'CollectionSite',
         text: 'Collection Site',
@@ -194,15 +204,17 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
         text: 'Reason for Admit',
         hidden: shouldHide,
         sort: true
-      }, {
-        dataField: 'ReleaseDate',
-        text: 'Release Date',
-        sort: true
-      }, {
-        dataField: 'DateOfDeath',
-        text: 'Date of Death',
-        sort: true
       }
+      //   dataField: 'ReleaseDate',
+      //   text: 'Release Date',
+      //   hidden: true,
+      //   sort: true
+      // }, {
+      //   dataField: 'DateOfDeath',
+      //   text: 'Date of Death',
+      //   hidden: true,
+      //   sort: true
+      // }
     ];
 
     const buttons = pages.map((page, i) => {
@@ -236,7 +248,19 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
 
     let speciesToRender = [];
     for (var species in currentSpecies) {
-      speciesToRender.push(<span><a href={this.createWikiLink(species)} target="_blank"><b>{species}</b></a>: {currentSpecies[species]}</span>);
+      let imgSrc;
+      if (species === 'Harbour seal') {
+        imgSrc = SEAL;
+      } else if (species === 'Steller sea lion') {
+        imgSrc = STELLER;
+      } else if (species === 'California sea lion') {
+        imgSrc = SEALION;
+      } else if (species === 'Northern fur seal') {
+        imgSrc = FURSEAL;
+      } else if (species === 'Northern elephant seal') {
+        imgSrc = ELEPHANTSEAL;
+      }
+      speciesToRender.push(<span style={{ margin: 6 }}><a href={this.createWikiLink(species)} target="_blank"><img style={{ borderRadius: 100 }} src={imgSrc} alt={species} width={150} height={150} /><br/><b>{species}</b></a>: {currentSpecies[species]}</span>);
     }
 
     return (
@@ -244,7 +268,9 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
         <div style={{ margin: '0 auto', maxWidth: 450, textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
           <h3>Total Current Patients: {this.state.currentPatients}</h3>
           <h4><u>Breakdown by species</u></h4>
-          {speciesToRender}
+          <div style={this.state.width < 965 ? { display: 'inline-flex', flexDirection: 'column' } : { display: 'inline-flex', flexDirection: 'row', width: 500 }}>
+            {speciesToRender}
+          </div>
         </div>
         <br/>
         <div style={{ display: 'inline-flex', flexDirection: 'row', marginRight: 15 }}>
