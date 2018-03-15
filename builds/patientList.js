@@ -141,19 +141,19 @@ var PatientList =
 	  var style = {};
 
 	  if (row.Status === 0) {
-	    style.backgroundColor = 'blue';
+	    style.backgroundColor = '#005EB8';
 	    style.color = 'white';
 	  }
 
 	  if (row.Status === 1) {
 	    // 1 is dead
-	    style.backgroundColor = 'red';
+	    style.backgroundColor = '#D44E4E';
 	    style.color = 'white';
 	  }
 
 	  if (row.Status === 2) {
 	    // 2 is released
-	    style.backgroundColor = 'green';
+	    style.backgroundColor = '#00B398';
 	    style.color = 'white';
 	  }
 
