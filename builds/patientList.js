@@ -222,7 +222,7 @@ var PatientList =
 	    value: function getData() {
 	      var _this2 = this;
 
-	      var URL = "https://sheets.googleapis.com/v4/spreadsheets/1coq6ZOy8fZYAZ6DKjPaQepaSvnhqu2B3eTSJ1Tp5FJA/values/Sheet1!A2:X1011?key=AIzaSyCy5jc38aVVg5GIseF611VkbGUKB3DNhXo";
+	      var URL = "https://sheets.googleapis.com/v4/spreadsheets/1coq6ZOy8fZYAZ6DKjPaQepaSvnhqu2B3eTSJ1Tp5FJA/values/Sheet1!A2:X1011?key=AIzaSyAqJ0S5QW4VBSoOdX5M9ipD-2RQcRm2fhQ";
 	      _axios2.default.get(URL).then(function (res) {
 	        var len = res.data.values.length;
 	        var spreadsheet = res.data.values;
@@ -440,42 +440,47 @@ var PatientList =
 	      }
 
 	      var speciesToRender = [];
+	      var speciesRendered = [];
 	      for (var species in currentSpecies) {
-	        var imgSrc = void 0;
-	        if (species === 'Harbour seal') {
-	          imgSrc = _harbourSeal2.default;
-	        } else if (species === 'Steller sea lion') {
-	          imgSrc = _stellerSeaLion2.default;
-	        } else if (species === 'California sea lion') {
-	          imgSrc = _californiaSeaLion2.default;
-	        } else if (species === 'Northern fur seal') {
-	          imgSrc = _northernFurSeal2.default;
-	        } else if (species === 'Northern elephant seal') {
-	          imgSrc = _northernElephantSeal2.default;
-	        } else if (species === 'Sea otter') {
-	          imgSrc = _otter2.default;
-	        } else if (species === 'Cetacean') {
-	          imgSrc = _dolphin2.default;
-	        } else {
-	          imgSrc = _turtle2.default;
-	        }
-	        speciesToRender.push(_react2.default.createElement(
-	          'span',
-	          { style: { margin: 6 } },
-	          _react2.default.createElement(
-	            'a',
-	            { href: this.createWikiLink(species), target: '_blank' },
-	            _react2.default.createElement('img', { style: { borderRadius: 100 }, src: imgSrc, alt: species, width: 150, height: 150 }),
-	            _react2.default.createElement('br', null),
+	        species = species.replace(/\s+/g, ' ').replace(/\s+$/g, '');
+	        if (!speciesRendered.includes(species)) {
+	          var imgSrc = void 0;
+	          if (species.match(/Harbour seal/g)) {
+	            imgSrc = _harbourSeal2.default;
+	          } else if (species.match(/Steller sea lion/g)) {
+	            imgSrc = _stellerSeaLion2.default;
+	          } else if (species.match(/California sea lion/g)) {
+	            imgSrc = _californiaSeaLion2.default;
+	          } else if (species.match(/Northern fur seal/g)) {
+	            imgSrc = _northernFurSeal2.default;
+	          } else if (species.match(/Northern elephant seal/g)) {
+	            imgSrc = _northernElephantSeal2.default;
+	          } else if (species.match(/Sea otter/g)) {
+	            imgSrc = _otter2.default;
+	          } else if (species.match(/Cetacean/g)) {
+	            imgSrc = _dolphin2.default;
+	          } else {
+	            imgSrc = _turtle2.default;
+	          }
+	          speciesRendered.push(species);
+	          speciesToRender.push(_react2.default.createElement(
+	            'span',
+	            { style: { margin: 6 } },
 	            _react2.default.createElement(
-	              'b',
-	              null,
-	              species
-	            )
-	          ),
-	          ': ',
-	          currentSpecies[species]
-	        ));
+	              'a',
+	              { href: this.createWikiLink(species), target: '_blank' },
+	              _react2.default.createElement('img', { style: { borderRadius: 100 }, src: imgSrc, alt: species, width: 150, height: 150 }),
+	              _react2.default.createElement('br', null),
+	              _react2.default.createElement(
+	                'b',
+	                null,
+	                species
+	              )
+	            ),
+	            ': ',
+	            currentSpecies[species]
+	          ));
+	        }
 	      }
 
 	      return _react2.default.createElement(
@@ -501,7 +506,7 @@ var PatientList =
 	          ),
 	          _react2.default.createElement(
 	            'div',
-	            { style: this.state.width < 965 ? { display: 'inline-flex', flexDirection: 'column' } : { display: 'inline-flex', flexDirection: 'row', width: 500 } },
+	            { style: this.state.width < 965 ? { display: 'inline-flex', flexDirection: 'column', justifyContent: 'center' } : { display: 'inline-flex', flexDirection: 'row', width: 445, justifyContent: 'center' } },
 	            speciesToRender
 	          )
 	        ),

@@ -83,7 +83,7 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
 
   // Gets approved posts, with the hashtag 'beoceanwise' from the OW UGC admin app
   getData() {
-    const URL = "https://sheets.googleapis.com/v4/spreadsheets/1coq6ZOy8fZYAZ6DKjPaQepaSvnhqu2B3eTSJ1Tp5FJA/values/Sheet1!A2:X1011?key=AIzaSyCy5jc38aVVg5GIseF611VkbGUKB3DNhXo";
+    const URL = "https://sheets.googleapis.com/v4/spreadsheets/1coq6ZOy8fZYAZ6DKjPaQepaSvnhqu2B3eTSJ1Tp5FJA/values/Sheet1!A2:X1011?key=AIzaSyAqJ0S5QW4VBSoOdX5M9ipD-2RQcRm2fhQ";
     axios.get(URL)
       .then((res) => {
         let len = res.data.values.length;
@@ -250,26 +250,31 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
     }
 
     let speciesToRender = [];
+    let speciesRendered = [];
     for (var species in currentSpecies) {
-      let imgSrc;
-      if (species === 'Harbour seal') {
-        imgSrc = SEAL;
-      } else if (species === 'Steller sea lion') {
-        imgSrc = STELLER;
-      } else if (species === 'California sea lion') {
-        imgSrc = SEALION;
-      } else if (species === 'Northern fur seal') {
-        imgSrc = FURSEAL;
-      } else if (species === 'Northern elephant seal') {
-        imgSrc = ELEPHANTSEAL;
-      } else if (species === 'Sea otter') {
-        imgSrc = OTTER;
-      } else if (species === 'Cetacean') {
-        imgSrc = DOLPHIN;
-      } else {
-        imgSrc = TURTLE;
+      species = species.replace(/\s+/g, ' ').replace(/\s+$/g, '');
+      if (!speciesRendered.includes(species)) {
+        let imgSrc;
+        if (species.match(/Harbour seal/g)) {
+          imgSrc = SEAL;
+        } else if (species.match(/Steller sea lion/g)) {
+          imgSrc = STELLER;
+        } else if (species.match(/California sea lion/g)) {
+          imgSrc = SEALION;
+        } else if (species.match(/Northern fur seal/g)) {
+          imgSrc = FURSEAL;
+        } else if (species.match(/Northern elephant seal/g)) {
+          imgSrc = ELEPHANTSEAL;
+        } else if (species.match(/Sea otter/g)) {
+          imgSrc = OTTER;
+        } else if (species.match(/Cetacean/g)) {
+          imgSrc = DOLPHIN;
+        } else {
+          imgSrc = TURTLE;
+        }
+        speciesRendered.push(species);
+        speciesToRender.push(<span style={{ margin: 6 }}><a href={this.createWikiLink(species)} target="_blank"><img style={{ borderRadius: 100 }} src={imgSrc} alt={species} width={150} height={150} /><br/><b>{species}</b></a>: {currentSpecies[species]}</span>);
       }
-      speciesToRender.push(<span style={{ margin: 6 }}><a href={this.createWikiLink(species)} target="_blank"><img style={{ borderRadius: 100 }} src={imgSrc} alt={species} width={150} height={150} /><br/><b>{species}</b></a>: {currentSpecies[species]}</span>);
     }
 
     return (
@@ -277,7 +282,7 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
         <div style={{ margin: '0 auto', maxWidth: 450, textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
           <h3>Total Current Patients: {this.state.currentPatients}</h3>
           <h4><u>Breakdown by species</u></h4>
-          <div style={this.state.width < 965 ? { display: 'inline-flex', flexDirection: 'column' } : { display: 'inline-flex', flexDirection: 'row', width: 500 }}>
+          <div style={this.state.width < 965 ? { display: 'inline-flex', flexDirection: 'column', justifyContent: 'center' } : { display: 'inline-flex', flexDirection: 'row', width: 445, justifyContent: 'center' }}>
             {speciesToRender}
           </div>
         </div>
