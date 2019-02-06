@@ -83,7 +83,7 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
 
   // Gets approved posts, with the hashtag 'beoceanwise' from the OW UGC admin app
   getData() {
-    const URL = "https://sheets.googleapis.com/v4/spreadsheets/1coq6ZOy8fZYAZ6DKjPaQepaSvnhqu2B3eTSJ1Tp5FJA/values/Sheet1!A2:X1011?key=AIzaSyAqJ0S5QW4VBSoOdX5M9ipD-2RQcRm2fhQ";
+    const URL = "https://sheets.googleapis.com/v4/spreadsheets/1raQqEwsoN3BZgJq-U1xGYgDagL_zSrs3Z5maa_AJw-U/values/Sheet1!A2:X1011?key=AIzaSyAqJ0S5QW4VBSoOdX5M9ipD-2RQcRm2fhQ";
     axios.get(URL)
       .then((res) => {
         let len = res.data.values.length;
@@ -255,19 +255,19 @@ class DataGrid extends React.Component { // eslint-disable-line react/prefer-sta
       species = species.replace(/\s+/g, ' ').replace(/\s+$/g, '');
       if (!speciesRendered.includes(species)) {
         let imgSrc;
-        if (species.match(/Harbour seal/g)) {
+        if (species.match(/Harbour seal/gi)) {
           imgSrc = SEAL;
-        } else if (species.match(/Steller sea lion/g)) {
+        } else if (species.match(/Steller sea lion/gi)) {
           imgSrc = STELLER;
-        } else if (species.match(/California sea lion/g)) {
+        } else if (species.match(/California sea lion/gi)) {
           imgSrc = SEALION;
-        } else if (species.match(/Northern fur seal/g)) {
+        } else if (species.match(/Northern fur seal/gi)) {
           imgSrc = FURSEAL;
-        } else if (species.match(/Northern elephant seal/g)) {
+        } else if (species.match(/Northern elephant seal/gi)) {
           imgSrc = ELEPHANTSEAL;
-        } else if (species.match(/Sea otter/g)) {
+        } else if (species.match(/Sea otter/gi)) {
           imgSrc = OTTER;
-        } else if (species.match(/Cetacean/g)) {
+        } else if (species.match(/Cetacean/gi)) {
           imgSrc = DOLPHIN;
         } else {
           imgSrc = TURTLE;

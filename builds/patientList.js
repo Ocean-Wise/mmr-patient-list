@@ -222,7 +222,7 @@ var PatientList =
 	    value: function getData() {
 	      var _this2 = this;
 
-	      var URL = "https://sheets.googleapis.com/v4/spreadsheets/1coq6ZOy8fZYAZ6DKjPaQepaSvnhqu2B3eTSJ1Tp5FJA/values/Sheet1!A2:X1011?key=AIzaSyAqJ0S5QW4VBSoOdX5M9ipD-2RQcRm2fhQ";
+	      var URL = "https://sheets.googleapis.com/v4/spreadsheets/1raQqEwsoN3BZgJq-U1xGYgDagL_zSrs3Z5maa_AJw-U/values/Sheet1!A2:X1011?key=AIzaSyAqJ0S5QW4VBSoOdX5M9ipD-2RQcRm2fhQ";
 	      _axios2.default.get(URL).then(function (res) {
 	        var len = res.data.values.length;
 	        var spreadsheet = res.data.values;
@@ -445,19 +445,19 @@ var PatientList =
 	        species = species.replace(/\s+/g, ' ').replace(/\s+$/g, '');
 	        if (!speciesRendered.includes(species)) {
 	          var imgSrc = void 0;
-	          if (species.match(/Harbour seal/g)) {
+	          if (species.match(/Harbour seal/gi)) {
 	            imgSrc = _harbourSeal2.default;
-	          } else if (species.match(/Steller sea lion/g)) {
+	          } else if (species.match(/Steller sea lion/gi)) {
 	            imgSrc = _stellerSeaLion2.default;
-	          } else if (species.match(/California sea lion/g)) {
+	          } else if (species.match(/California sea lion/gi)) {
 	            imgSrc = _californiaSeaLion2.default;
-	          } else if (species.match(/Northern fur seal/g)) {
+	          } else if (species.match(/Northern fur seal/gi)) {
 	            imgSrc = _northernFurSeal2.default;
-	          } else if (species.match(/Northern elephant seal/g)) {
+	          } else if (species.match(/Northern elephant seal/gi)) {
 	            imgSrc = _northernElephantSeal2.default;
-	          } else if (species.match(/Sea otter/g)) {
+	          } else if (species.match(/Sea otter/gi)) {
 	            imgSrc = _otter2.default;
-	          } else if (species.match(/Cetacean/g)) {
+	          } else if (species.match(/Cetacean/gi)) {
 	            imgSrc = _dolphin2.default;
 	          } else {
 	            imgSrc = _turtle2.default;
