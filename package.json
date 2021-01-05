@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/edinnen/reactEmbed#readme",
   "dependencies": {
-    "axios": "^0.17.1",
+    "axios": "^0.21.1",
     "babel-cli": "^6.5.0",
     "babel-core": "^6.5.0",
     "babel-loader": "^6.2.4",
